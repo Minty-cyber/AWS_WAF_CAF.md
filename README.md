@@ -1,6 +1,6 @@
 # Improved Architecture
 
-![Improved Architecture](Improved%20Architecture.png)
+![Improved Architecture](ImprovedArchitecture.png)
 
 # AWS Well-Architected & Cloud Adoption Framework Lab
 
@@ -70,3 +70,4 @@ I followed a structured, step-by-step methodology aligned with the lab objective
 This submission demonstrates thinking like a cloud architect: critical evaluation, framework-driven recommendations, best-practice alignment, and clear documentation.
 
 Feel free to clone/fork and explore!
+
