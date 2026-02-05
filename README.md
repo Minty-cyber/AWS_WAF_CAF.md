@@ -1,6 +1,6 @@
 # Improved Architecture
 
-![Improved Architecture](ImprovedArchitecture.png)
+![Improved Architecture](image.png)
 
 # AWS Well-Architected & Cloud Adoption Framework Lab
 
