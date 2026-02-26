@@ -1,9 +1,9 @@
 # AWS Well-Architected & Cloud Adoption Framework Assessment
 
 **Lab Title:** Design and Evaluate an AWS Solution Using the Well-Architected and Cloud Adoption Frameworks  
-**Submitted by:** Jeffrey  
+**Submitted by:** Jeffrey Mintah
 **Date:** February 2026  
-**GitHub Repository:** [Your repo link]
+
 
 ## Task 1 – Review the Existing Architecture
 
