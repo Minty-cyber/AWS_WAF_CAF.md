@@ -1,23 +1,25 @@
 # AWS Well-Architected & Cloud Adoption Framework Assessment
 
 **Lab Title:** Design and Evaluate an AWS Solution Using the Well-Architected and Cloud Adoption Frameworks  
-**Submitted by:** Jeffrey Mintah
-**Date:** February 2026  
+**Submitted by:** Jeffrey Mintah  
+**Date:** February 2026
 
+The AWS Well-Architected Framework now includes **six pillars**: Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization, and **Sustainability** (focused on minimizing environmental impact through efficient resource use, energy optimization, and waste reduction).
 
 ## Task 1 – Review the Existing Architecture
 
 ### 1. Components of the workload (current lift-and-shift deployment on AWS)
-| AWS Resource          | Details                                                                 |
-|-----------------------|-------------------------------------------------------------------------|
-| VPC                   | Single VPC with public and private subnets                              |
-| EC2 instances         | 1–2 t3.medium or m5.large instances running the web/frontend/application tier |
-| Amazon RDS            | Single-AZ MySQL or PostgreSQL instance in a private subnet              |
-| Security Groups       | Web SG: ports 80, 443, 22 open from 0.0.0.0/0                           |
-| Internet Gateway      | Attached to the VPC; EC2 instances directly reachable from internet     |
-| Elastic IP / Public DNS | Directly pointing to EC2 instance (no load balancer)                   |
-| EBS volumes           | Root and data volumes attached to EC2                                   |
-| RDS automated backups | Enabled with default 7-day retention                                    |
+
+| AWS Resource              | Details                                                                 |
+|---------------------------|-------------------------------------------------------------------------|
+| Amazon RDS                | Single-AZ MySQL or PostgreSQL instance in a private subnet              |
+| EC2 instances             | 1–2 t3.medium or m5.large instances running the web/frontend/application tier |
+| Security Groups           | Web SG: ports 80, 443, 22 open from 0.0.0.0/0                           |
+| EBS volumes               | Root and data volumes attached to EC2                                   |
+| RDS automated backups     | Enabled with default 7-day retention                                    |
+| Internet Gateway          | Attached to the VPC; EC2 instances directly reachable from internet     |
+| VPC                       | Single VPC with public and private subnets                              |
+| Elastic IP / Public DNS   | Directly pointing to EC2 instance (no load balancer)                    |
 
 ### 2. Potential risks or weaknesses
 - **Single-AZ deployment** — EC2 and RDS in one AZ; Availability Zone failure causes full outage.
@@ -30,7 +32,7 @@
 - **No web application firewall** — Vulnerable to SQL injection, XSS, etc.
 - **No CDN** — Slow global load times; all traffic hits EC2 directly.
 - **Limited monitoring** — Basic CloudWatch only; issues often detected by users.
-- **Always-on fixed instances** — Paying for idle capacity 24/7.
+- **Always-on fixed instances** — Paying for idle capacity 24/7 (also increases unnecessary energy consumption).
 
 ## Task 2 – Well-Architected Framework Evaluation
 
@@ -41,6 +43,7 @@
 | **Reliability**         | Easy to introduce backups in AWS                | Single-AZ risks full downtime               | Multi-AZ deployment + automatic failover            | RDS Multi-AZ, Auto Scaling Group, ALB   |
 | **Performance Efficiency** | Scalable compute available on-demand          | Manual scaling leads to overload/underuse   | Elastic scaling + caching/CDN                       | Auto Scaling Group, CloudFront, ElastiCache |
 | **Cost Optimization**   | Pay-as-you-go eliminates upfront hardware costs | Over-provisioned always-on resources        | Right-size + scale to demand + committed discounts  | Auto Scaling, Compute Savings Plans, Trusted Advisor |
+| **Sustainability**      | Cloud infrastructure allows for efficient hardware choices | Always-on fixed instances waste energy; no demand alignment | Maximize utilization, scale dynamically, prefer efficient services/hardware | Auto Scaling Group, Graviton instances, Managed Services (e.g., RDS, ALB), AWS Compute Optimizer |
 
 ## Task 3 – Apply the AWS Cloud Adoption Framework (CAF)
 
@@ -72,7 +75,6 @@ Operations rely on manual maintenance; monitoring is reactive.
 
 ### Improved Architecture Description (see architecture-diagram.png / draw.io file)
 The revised design modernizes the lift-and-shift setup into a secure, highly available two-tier web application:
-
 - Custom **VPC** with public and private subnets across **multiple Availability Zones** (e.g., ap-southeast-1a/b).
 - **Internet Gateway** for public inbound traffic.
 - **NAT Gateway** (in public subnet) for secure outbound from private resources.
@@ -85,19 +87,20 @@ The revised design modernizes the lift-and-shift setup into a secure, highly ava
 
 This matches AWS best practices for two-tier apps (public-facing ALB → private compute → private DB).
 
-### How the new design aligns with the five WAF pillars
+### How the new design aligns with the six WAF pillars
 - **Operational Excellence** — IaC (CloudFormation) for repeatable setup; Session Manager (no open port 22); CloudWatch monitoring/alarms.
 - **Security** — Private subnets for RDS & backend; least-privilege SGs (ALB → EC2 only, EC2 → RDS only); ACM TLS; no public SSH; potential WAF on ALB.
 - **Reliability** — Multi-AZ across ALB, ASG, RDS (automatic failover); health checks remove unhealthy instances.
 - **Performance Efficiency** — ALB intelligent routing; ASG elastic scaling; CloudFront CDN for static content reduces latency/EC2 load.
 - **Cost Optimization** — ASG scales down during low traffic (min 1–2, can go to 0); Savings Plans for predictable usage; pay only for used resources.
+- **Sustainability** — Dynamic scaling (ASG) minimizes idle resources/energy waste; managed services (RDS Multi-AZ, ALB) reduce operational overhead; potential use of efficient hardware (e.g., Graviton instances); CloudFront reduces data transfer energy; right-sizing and stopping unused assets align with demand to lower overall environmental impact.
 
 The design fully addresses Task 1 risks (single-AZ, open ports, no scaling, no CDN, etc.) and supports CAF perspectives (managed services reduce People/Operations effort; standardized pattern aids Governance/Platform).
 
 ## Brief Reflection
-After earning my Cloud Practitioner certification, this lab connected theory to practice. I finally saw how the five Well-Architected pillars apply to real workloads — not just exam memorization. The “aha” moment was realizing a simple lift-and-shift isn’t enough; high availability, least-privilege security, and cost awareness must be built in from day one. The CAF section showed migration success depends as much on people, governance, and business alignment as on technology. Drawing the improved architecture felt like real cloud architect work — balancing pillars and trade-offs. I now understand why AWS stresses “build it right the first time.” This transformed my CCP knowledge into practical thinking. Thank you for the opportunity!
+After earning my Cloud Practitioner certification, this lab connected theory to practice. I finally saw how the **six Well-Architected pillars** — now including Sustainability — apply to real workloads, not just exam memorization. The “aha” moment was realizing a simple lift-and-shift isn’t enough; high availability, least-privilege security, cost awareness, **and environmental efficiency** must be built in from day one. The CAF section showed migration success depends as much on people, governance, and business alignment as on technology. Drawing the improved architecture felt like real cloud architect work — balancing pillars and trade-offs, including reducing energy waste through scaling and managed services. I now understand why AWS stresses “build it right the first time.” This transformed my CCP knowledge into practical thinking. Thank you for the opportunity!
 
-**References**  
-- [!https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html](AWS Well-Architected Framework)
-- AWS Cloud Adoption Framework  
-- AWS VPC / ALB / RDS / Auto Scaling best practices documentation
+**References**
+- AWS Well-Architected Framework (including Sustainability Pillar): https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html
+- AWS Cloud Adoption Framework
+- AWS VPC / ALB / RDS / Auto Scaling / Sustainability best practices documentation
